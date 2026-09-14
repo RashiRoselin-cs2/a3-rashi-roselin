@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang='en'>
+  <head>
+    <title>CS4241 Assignment 3</title>
+    <meta charset='utf-8' />
+    <script src='js/main.js'></script>
+    <link rel='stylesheet' href='css/main.css' />
+    <meta name="Assignment 3" content="Assignment 3">
+    <!-- get rid of favicon error -->
+    <link rel='icon' href='data:;base64,iVBORw0KGgo=' />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Google+Sans:ital,opsz,wght@0,17..18,400..700;1,17..18,400..700&display=swap" rel="stylesheet">
+  </head>
+  <body class="google-sans">
+    <h1>Baseball Player Stats Table</h1>
+    <form action="/submit" method="post">
+      <input type='text' id='name' placeholder="name">
+      <input type="text" id="avg" placeholder="average">
+      <input type="text" id="obp" placeholder="on-base">
+      <input type="text" id="slg" placeholder="slugging">
+      <button id="AddPlayer">add</button>
+    </form>
+    <p class="first-paragraph">This is a table to add your favorite players! In order to add a player, enter their name, batting average, on-base percentage, and slugging percentage, then click the <span id="submit-span">add</span> button.</p>
+    <p>In order to remove a player, enter their name in the remove field and click the <span id="remove-span">remove</span> button.</p>
+    <p>You may need to refresh the page to see the proper player list.</p>
+    <table id="table">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Batting Average</th>
+          <th>On-Base Percentage</th>
+          <th>Slugging Percentage</th>
+          <th>OPS</th>
+        </tr>
+      </thead>
+      <!--
+        <tr>
+          <td>Yordan Alvarez</td>
+          <td>0.317</td>
+          <td>0.432</td>
+          <td>0.607</td>
+          <td>1.039</td>
+        </tr>
+        <tr>
+          <td>Mike Trout</td>
+          <td>0.239</td>
+          <td>0.378</td>
+          <td>0.429</td>
+          <td>0.807</td>
+        </tr>
+        <tr>
+          <td>Juan Soto</td>
+          <td>0.283</td>
+          <td>0.407</td>
+          <td>0.543</td>
+          <td>0.950</td>
+        </tr>
+      -->
+      <tbody id="table-body">
+
+      </tbody>
+    </table>
+    <form>
+      <input type='text' id='remove' placeholder="name">
+      <button id="RemovePlayer">remove</button>
+    </form>
+    <h2>Stat Definitions</h2>
+    <ul>
+      <li><strong>Batting Average</strong> - The number of hits divided by the number of at-bats. Must be between 0 and 1.</li>
+      <li><strong>On-Base Percentage</strong> - How frequently a batter reaches base per plate appearance. Must be between 0 and 1.</li>
+      <li><strong>Slugging Percentage</strong> - The total number of bases per at-bat. Must be between 0 and 4.</li>
+      <li><strong>OPS</strong> - On-base plus slugging. This is calculated by adding a player's on-base percentage and slugging percentage together.</li>
+    </ul>
+    <button id="Logout">Logout</button>
+    <button id="Login"></button>
+  </body>
+</html>

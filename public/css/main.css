@@ -1,0 +1,65 @@
+
+.google-sans {
+  font-family: "Google Sans", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 500;
+  font-style: normal;
+  font-variation-settings:
+    "GRAD" 0;
+}
+
+body {
+  background:#000080;
+  color:white;
+  display:grid;
+  grid-template-columns: auto;
+}
+.first-paragraph {
+  width: 50%;
+}
+#submit-span {
+  font-weight: bold;
+  background-color: white;
+  color: darkgreen;
+}
+
+#remove-span {
+  font-weight: bold;
+  background-color: white;
+  color: darkred;
+}
+
+#AddPlayer {
+  background-color:darkgreen;
+  border-color:darkgreen;
+  color:white;
+}
+
+#RemovePlayer {
+  background-color:darkred;
+  border-color:darkred;
+  color:white;
+}
+table {
+  width: 50%;
+}
+th {
+  border-style: solid;
+}
+
+td {
+  border-style: outset;
+}
+
+li {
+  width: 50%;
+}
+
+
+
+#Logout {
+  width: 50%;
+  background-color: purple;
+  border-color: purple;
+  color: white;
+}
