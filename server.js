@@ -15,10 +15,6 @@ const accounts = [
 ]
 const client = new MongoClient( uri )
 let collection = null
-
-// ==========================================
-// 1. MANDATORY PARSERS & COOKIES (MUST BE FIRST)
-// ==========================================
 app.use( express.json() ) 
 app.use( express.urlencoded({ extended:true }) )
 
@@ -27,10 +23,6 @@ app.use( cookie({
   keys: ['kljsfdhkljsfdhkjlasfhfdkhlas', 'kasadbdasihdsfaidfsfsdc'],
   httpOnly: false
 }))
-
-// ==========================================
-// 2. MONGO DATABASE BOOTSTRAP CONNECTION
-// ==========================================
 async function run() {
   try {
     await client.connect()
@@ -40,9 +32,7 @@ async function run() {
     console.error("Database connection failed:", err);
   }
 }
-run(); // Fires the async connection engine
-
-// Optional safety check: Blocks subsequent routes if the DB hasn't connected yet
+run();
 app.use( (req, res, next) => {
   if( collection !== null || req.path === '/login' ) { 
     next()
@@ -50,17 +40,8 @@ app.use( (req, res, next) => {
     res.status( 503 ).send("Database initializing... Please refresh shortly.")
   }
 })
-
-// ==========================================
-// 3. STATIC WEBPAGE AND VIEW FILE SERVERS
-// ==========================================
 app.use( express.static( 'public' ) )
 app.use( express.static( 'views'  ) )
-
-// ==========================================
-// 4. ROUTE ENDPOINTS
-// ==========================================
-
 app.get( '/', function( req, res ) {
   res.redirect( '/index.html' )
 })
@@ -75,7 +56,6 @@ app.get("/docs", async (req, res) => {
 })
 
 app.post( '/login', (req, res) => {
-  // express.json() catches this cleanly now!
   const { username, password } = req.body
   
   console.log("===============================");
@@ -169,8 +149,6 @@ app.post( '/submit', async function( req, res ) {
   if (!collection) {
     return res.status(503).json({ error: "Database not connected yet" });
   }
-
-  // A. AUTH CHECK: Read session parameters from the incoming cookie stream
   const currentUsername = req.session.username;
   
   if (!req.session.login || !currentUsername) {
@@ -180,24 +158,19 @@ app.post( '/submit', async function( req, res ) {
   const incomingData = req.body;
 
   try {
-    // SCENARIO 1: REMOVE PLAYER (Scoped strictly to the current logged-in owner)
     if (incomingData.avg === 'remove') {
       await collection.deleteOne({ 
         name: incomingData.name, 
-        owner: currentUsername // Prevents User A from deleting User B's records
+        owner: currentUsername
       });
       
       const updatedDocs = await collection.find({ owner: currentUsername }).toArray();
       return res.json(updatedDocs);
     }
-
-    // SCENARIO 2: INITIAL DATA EXTRACTION FETCH (On Page Load)
     if (!incomingData.name || incomingData.name === '') {
       const userSpecificDocs = await collection.find({ owner: currentUsername }).toArray();
       return res.json(userSpecificDocs);
     }
-
-    // SCENARIO 3: DATA STRUCTURING VALIDATION CHECKS
     const avgNum = parseFloat(incomingData.avg);
     const obpNum = parseFloat(incomingData.obp);
     const slgNum = parseFloat(incomingData.slg);
@@ -206,15 +179,12 @@ app.post( '/submit', async function( req, res ) {
       const currentDocs = await collection.find({ owner: currentUsername }).toArray();
       return res.json(currentDocs);
     }
-
-    // SCENARIO 4: UPSERT AND SAVE DOCUMENT LINKED TO OWNER
-    // Bundle the incoming properties together and attach the ownership property tag
     const playerDocument = {
       name: incomingData.name,
       avg: incomingData.avg,
       obp: incomingData.obp,
       slg: incomingData.slg,
-      owner: currentUsername // Crucial identifier property
+      owner: currentUsername 
     };
 
     await collection.updateOne(
@@ -222,8 +192,6 @@ app.post( '/submit', async function( req, res ) {
       { $set: playerDocument },      
       { upsert: true }             
     );
-
-    // Retrieve only this specific user's dataset to pass back to the frontend layout
     const freshDocs = await collection.find({ owner: currentUsername }).toArray();
     res.json(freshDocs);
 
@@ -246,10 +214,6 @@ const sendFile = (response, filename) => {
     }
   })
 }
-
-// ==========================================
-// 5. APPLICATION PORTS LISTENER ENGINE
-// ==========================================
 app.listen( process.env.PORT || port, () => {
   console.log(`Server executing cleanly on port ${port}`);
 })

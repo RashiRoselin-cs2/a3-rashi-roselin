@@ -21,15 +21,19 @@ const submit = async function( event ) {
 };
 
 window.onload = async function() {
- populateTable2();
-  const button = document.querySelector('#AddPlayer')
-  const removeButton = document.querySelector('#RemovePlayer')
-  const loginButton = document.querySelector('#Login')
-  const logoutButton = document.querySelector('#Logout')
-  loginButton.onclick = login
-  button.onclick = submit
-  removeButton.onclick = remove
-  logoutButton.onclick = logout
+  if (window.location.pathname === '/playertable.html') {
+    populateTable2();
+    const button = document.querySelector('#AddPlayer')
+    const removeButton = document.querySelector('#RemovePlayer')
+    const logoutButton = document.querySelector('#Logout')
+    button.onclick = submit
+    removeButton.onclick = remove
+    logoutButton.onclick = logout
+  }
+  else if (window.location.pathname === '/index.html') {
+    const loginButton = document.querySelector('#Login')
+    loginButton.onclick = login
+  }
 }
 
 async function populateTable() {
