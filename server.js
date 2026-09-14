@@ -100,11 +100,11 @@ app.post( '/login', (req, res) => {
   if( correct && exists ) {
     req.session.login = true
     req.session.username = username
-    res.json({ success: true, message: "Logged in successfully!" })
+    res.json({ success: true, isNewUser: false, message: "Logged in successfully!" })
   } else if (correct && !exists ) {
     req.session.login = true
     req.session.username = username
-    res.json({ success: true, message: "New user created!" })
+    res.json({ success: true, isNewUser: true, message: "New user created!" })
   } else {
     res.status(401).json({ success: false, message: "Incorrect password." })
   }

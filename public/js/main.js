@@ -225,6 +225,9 @@ const login = async function( event ) {
     const data = await response.json();
 
     if (data.success) {
+      if (data.isNewUser) {
+        alert("This account has now been registered.")
+      }
       // Login passed, redirect the web browser forward
       window.location.href = '/playertable.html';
     } else {
