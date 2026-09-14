@@ -109,7 +109,7 @@ app.post( '/login', (req, res) => {
     res.status(401).json({ success: false, message: "Incorrect password." })
   }
 })
-
+/**
 app.post( '/submit', function( req, res ) {
   const incomingData = req.body;
 
@@ -162,7 +162,76 @@ const names = []
   }
   res.json( appdata );
 })
+*/
+app.post( '/submit', async function( req, res ) {
+  res.setHeader('Content-Type', 'application/json');
 
+  if (!collection) {
+    return res.status(503).json({ error: "Database not connected yet" });
+  }
+
+  // A. AUTH CHECK: Read session parameters from the incoming cookie stream
+  const currentUsername = req.session.username;
+  
+  if (!req.session.login || !currentUsername) {
+    return res.status(401).json({ error: "Unauthorized. Please log in first." });
+  }
+
+  const incomingData = req.body;
+
+  try {
+    // SCENARIO 1: REMOVE PLAYER (Scoped strictly to the current logged-in owner)
+    if (incomingData.avg === 'remove') {
+      await collection.deleteOne({ 
+        name: incomingData.name, 
+        owner: currentUsername // Prevents User A from deleting User B's records
+      });
+      
+      const updatedDocs = await collection.find({ owner: currentUsername }).toArray();
+      return res.json(updatedDocs);
+    }
+
+    // SCENARIO 2: INITIAL DATA EXTRACTION FETCH (On Page Load)
+    if (!incomingData.name || incomingData.name === '') {
+      const userSpecificDocs = await collection.find({ owner: currentUsername }).toArray();
+      return res.json(userSpecificDocs);
+    }
+
+    // SCENARIO 3: DATA STRUCTURING VALIDATION CHECKS
+    const avgNum = parseFloat(incomingData.avg);
+    const obpNum = parseFloat(incomingData.obp);
+    const slgNum = parseFloat(incomingData.slg);
+
+    if (avgNum > 1 || avgNum < 0 || obpNum > 1 || obpNum < 0 || slgNum > 4 || slgNum < 0) {
+      const currentDocs = await collection.find({ owner: currentUsername }).toArray();
+      return res.json(currentDocs);
+    }
+
+    // SCENARIO 4: UPSERT AND SAVE DOCUMENT LINKED TO OWNER
+    // Bundle the incoming properties together and attach the ownership property tag
+    const playerDocument = {
+      name: incomingData.name,
+      avg: incomingData.avg,
+      obp: incomingData.obp,
+      slg: incomingData.slg,
+      owner: currentUsername // Crucial identifier property
+    };
+
+    await collection.updateOne(
+      { name: incomingData.name, owner: currentUsername }, 
+      { $set: playerDocument },      
+      { upsert: true }             
+    );
+
+    // Retrieve only this specific user's dataset to pass back to the frontend layout
+    const freshDocs = await collection.find({ owner: currentUsername }).toArray();
+    res.json(freshDocs);
+
+  } catch (error) {
+    console.error("Database operation error:", error);
+    res.status(500).json({ error: "Internal Database Error" });
+  }
+});
 
 // Native file recovery wrapper fallback (if needed)
 const sendFile = (response, filename) => {

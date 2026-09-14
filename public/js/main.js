@@ -101,6 +101,9 @@ async function populateTable2() {
   //const newRow = document.createElement('tr');
   const response = await fetch( '/submit', {
     method:'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
     body
   })
   //console.log('body:', body);
