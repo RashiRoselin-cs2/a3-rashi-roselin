@@ -57,11 +57,8 @@ app.get("/docs", async (req, res) => {
 
 app.post( '/login', (req, res) => {
   const { username, password } = req.body
-  
-  console.log("===============================");
-  console.log("Login data received:", req.body )
-  console.log("Password entered:", password)
-  console.log("===============================");
+  //console.log("Login data received:", req.body )
+  //console.log("Password entered:", password)
   let correct = false
   let exists = false
   for (let item of accounts) {
@@ -214,6 +211,8 @@ const sendFile = (response, filename) => {
     }
   })
 }
-app.listen( process.env.PORT || port, () => {
-  console.log(`Server executing cleanly on port ${port}`);
-})
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, () => {
+  console.log(`Application successfully listening on port ${PORT}`);
+});
